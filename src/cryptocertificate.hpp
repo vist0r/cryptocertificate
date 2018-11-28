@@ -9,7 +9,9 @@ class cryptocertificate : public eosio::contract{
 
 			bool qwhitelist(account_name user);
 
-			void adduser(uint64_t id,account_name user,uint32_t role);
+			void adduser(account_name user,uint32_t role);
+
+			void udestroy(account_name user);
 		private :
 			//@abi table udata
 			struct userinfo{
@@ -36,4 +38,4 @@ class cryptocertificate : public eosio::contract{
 
 };
 
-EOSIO_ABI(cryptocertificate,(adduser))
+EOSIO_ABI(cryptocertificate,(adduser)(udestroy))
