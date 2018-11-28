@@ -1,13 +1,14 @@
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/print.hpp>
-#include "cryptocertificate.hpp"
 #include <string>
 #include <vector>
 class cryptocertificate : public eosio::contract{
 		public :
 			cryptocertificate(account_name self)
-			:eosio::contract(self),data(_self,_self){}
-			int qwhitelist(account_name user);
+			:eosio::contract(self),data(_self,_self),whitelist(_self,_self){}
+
+			bool qwhitelist(account_name user);
+
 			void adduser(uint64_t id,account_name user,uint32_t role);
 		private :
 			//@abi table udata
@@ -33,5 +34,6 @@ class cryptocertificate : public eosio::contract{
 			typedef eosio::multi_index<N(whitelist),whiteList> whiteListIndex;
 			whiteListIndex whitelist;
 
-}
-EOSIO_ABI(cryptocertificate,(qwhitelist)(adduser))
+};
+
+EOSIO_ABI(cryptocertificate,(adduser))

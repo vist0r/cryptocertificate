@@ -1,5 +1,3 @@
-#include <eosiolib/eosio.hpp>
-#include <eosiolib/print.hpp>
 #include "cryptocertificate.hpp"
 bool cryptocertificate::qwhitelist(account_name user){
 	return true;
