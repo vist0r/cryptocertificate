@@ -33,7 +33,7 @@
  (table 3 3 anyfunc)
  (elem (i32.const 0) $__wasm_nullptr $_ZN17cryptocertificate7adduserEym $_ZN17cryptocertificate8udestroyEy)
  (memory $0 1)
- (data (i32.const 4) "\f0c\00\00")
+ (data (i32.const 4) "\10d\00\00")
  (data (i32.const 16) "onerror\00")
  (data (i32.const 32) "eosio\00")
  (data (i32.const 48) "onerror action\'s are only valid from the \"eosio\" system account\00")
@@ -50,11 +50,12 @@
  (data (i32.const 500) "\00\02\00\00")
  (data (i32.const 512) ".12345abcdefghijklmnopqrstuvwxyz\00")
  (data (i32.const 560) "Account already exists!\00")
- (data (i32.const 592) "cannot create objects in table of another contract\00")
- (data (i32.const 656) " is created! \00")
- (data (i32.const 672) "false\00")
- (data (i32.const 688) "write\00")
- (data (i32.const 9104) "malloc_from_freed was designed to only be called after _heap was completely allocated\00")
+ (data (i32.const 592) "Permission denied!!\00")
+ (data (i32.const 624) "cannot create objects in table of another contract\00")
+ (data (i32.const 688) " is created! \00")
+ (data (i32.const 704) "true\00")
+ (data (i32.const 720) "write\00")
+ (data (i32.const 9136) "malloc_from_freed was designed to only be called after _heap was completely allocated\00")
  (export "memory" (memory $0))
  (export "_ZeqRK11checksum256S1_" (func $_ZeqRK11checksum256S1_))
  (export "_ZeqRK11checksum160S1_" (func $_ZeqRK11checksum160S1_))
@@ -1204,6 +1205,15 @@
    )
    (i32.const 560)
   )
+  (call $eosio_assert
+   (i32.lt_u
+    (i32.load offset=28
+     (get_local $12)
+    )
+    (i32.const 2)
+   )
+   (i32.const 592)
+  )
   (set_local $1
    (i64.load offset=32
     (get_local $12)
@@ -1237,7 +1247,7 @@
     )
     (call $current_receiver)
    )
-   (i32.const 592)
+   (i32.const 624)
   )
   (i32.store offset=48
    (get_local $12)
@@ -1512,10 +1522,10 @@
    )
   )
   (call $prints
-   (i32.const 656)
+   (i32.const 688)
   )
   (call $prints
-   (i32.const 672)
+   (i32.const 704)
   )
   (i32.store offset=4
    (i32.const 0)
@@ -7085,7 +7095,7 @@
     )
     (i32.const 7)
    )
-   (i32.const 688)
+   (i32.const 720)
   )
   (drop
    (call $memcpy
@@ -7117,7 +7127,7 @@
     )
     (i32.const 3)
    )
-   (i32.const 688)
+   (i32.const 720)
   )
   (drop
    (call $memcpy
@@ -7213,7 +7223,7 @@
      )
      (i32.const 0)
     )
-    (i32.const 688)
+    (i32.const 720)
    )
    (drop
     (call $memcpy
@@ -7393,7 +7403,7 @@
      )
      (i32.const 0)
     )
-    (i32.const 688)
+    (i32.const 720)
    )
    (drop
     (call $memcpy
@@ -7469,7 +7479,7 @@
      )
      (get_local $5)
     )
-    (i32.const 688)
+    (i32.const 720)
    )
    (drop
     (call $memcpy
@@ -7512,11 +7522,11 @@
   (get_local $0)
  )
  (func $_ZN17cryptocertificate10qwhitelistEy (param $0 i32) (param $1 i64) (result i32)
-  (i32.const 1)
+  (i32.const 0)
  )
  (func $malloc (param $0 i32) (result i32)
   (call $_ZN5eosio14memory_manager6mallocEm
-   (i32.const 696)
+   (i32.const 728)
    (get_local $0)
   )
  )
@@ -7761,7 +7771,7 @@
          )
         )
        )
-       (i32.const 9104)
+       (i32.const 9136)
       )
       (set_local $13
        (i32.add
@@ -7985,13 +7995,13 @@
    (block $label$1
     (br_if $label$1
      (i32.eqz
-      (i32.load8_u offset=9190
+      (i32.load8_u offset=9222
        (i32.const 0)
       )
      )
     )
     (set_local $7
-     (i32.load offset=9192
+     (i32.load offset=9224
       (i32.const 0)
      )
     )
@@ -8000,11 +8010,11 @@
    (set_local $7
     (current_memory)
    )
-   (i32.store8 offset=9190
+   (i32.store8 offset=9222
     (i32.const 0)
     (i32.const 1)
    )
-   (i32.store offset=9192
+   (i32.store offset=9224
     (i32.const 0)
     (tee_local $7
      (i32.shl
@@ -8055,7 +8065,7 @@
        )
       )
       (set_local $3
-       (i32.load offset=9192
+       (i32.load offset=9224
         (i32.const 0)
        )
       )
@@ -8063,7 +8073,7 @@
      (set_local $8
       (i32.const 0)
      )
-     (i32.store offset=9192
+     (i32.store offset=9224
       (i32.const 0)
       (get_local $3)
      )
@@ -8117,18 +8127,18 @@
      )
      (block $label$6
       (br_if $label$6
-       (i32.load8_u offset=9190
+       (i32.load8_u offset=9222
         (i32.const 0)
        )
       )
       (set_local $3
        (current_memory)
       )
-      (i32.store8 offset=9190
+      (i32.store8 offset=9222
        (i32.const 0)
        (i32.const 1)
       )
-      (i32.store offset=9192
+      (i32.store offset=9224
        (i32.const 0)
        (tee_local $3
         (i32.shl
@@ -8196,12 +8206,12 @@
        )
       )
       (set_local $6
-       (i32.load offset=9192
+       (i32.load offset=9224
         (i32.const 0)
        )
       )
      )
-     (i32.store offset=9192
+     (i32.store offset=9224
       (i32.const 0)
       (i32.add
        (get_local $6)
@@ -8461,7 +8471,7 @@
     (br_if $label$1
      (i32.lt_s
       (tee_local $2
-       (i32.load offset=9080
+       (i32.load offset=9112
         (i32.const 0)
        )
       )
@@ -8469,7 +8479,7 @@
      )
     )
     (set_local $3
-     (i32.const 8888)
+     (i32.const 8920)
     )
     (set_local $1
      (i32.add
@@ -8477,7 +8487,7 @@
        (get_local $2)
        (i32.const 12)
       )
-      (i32.const 8888)
+      (i32.const 8920)
      )
     )
     (loop $label$2
@@ -8569,7 +8579,7 @@
     (br_if $label$0
      (i32.eqz
       (tee_local $2
-       (i32.load offset=9196
+       (i32.load offset=9228
         (i32.const 0)
        )
       )

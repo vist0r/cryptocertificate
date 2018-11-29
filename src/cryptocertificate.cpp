@@ -1,6 +1,6 @@
 #include "cryptocertificate.hpp"
-bool cryptocertificate::qwhitelist(account_name user){
-	return true;
+int cryptocertificate::qwhitelist(account_name user){
+	return 0;
 }
 
 void cryptocertificate::adduser(account_name user,uint32_t role){
@@ -8,7 +8,8 @@ void cryptocertificate::adduser(account_name user,uint32_t role){
 	uint64_t Id = eosio::string_to_name(namecheck.to_string().c_str());
 	auto itr = data.find(Id);
 	eosio_assert(itr == data.end(),"Account already exists!");
-	//eosio_assert((!(cryptocertificate::qwhitelist(user)) && (role > 1)) ,"Permission denied!!" );
+	int hasPermission = !(!(cryptocertificate::qwhitelist(user)) && (role > 1));
+	eosio_assert(hasPermission ,"Permission denied!!" );
 	data.emplace(user,[&](auto &o){
 		std::vector<std::string> v;
 		v.clear();
@@ -18,7 +19,7 @@ void cryptocertificate::adduser(account_name user,uint32_t role){
 		o.id = eosio::string_to_name(o.uname.c_str());
 		o.cname = v;
 	});
-	eosio::print(user," is created! ",((!(cryptocertificate::qwhitelist(user)))&&(role > 1)));
+	eosio::print(user," is created! ") ;
 }
 
 void cryptocertificate::udestroy(account_name user){

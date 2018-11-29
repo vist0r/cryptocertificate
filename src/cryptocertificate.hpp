@@ -7,7 +7,7 @@ class cryptocertificate : public eosio::contract{
 			cryptocertificate(account_name self)
 			:eosio::contract(self),data(_self,_self),whitelist(_self,_self){}
 
-			bool qwhitelist(account_name user);
+			int qwhitelist(account_name user);
 
 			void adduser(account_name user,uint32_t role);
 
