@@ -5,13 +5,25 @@
 class cryptocertificate : public eosio::contract{
 		public :
 			cryptocertificate(account_name self)
-			:eosio::contract(self),data(_self,_self),whitelist(_self,_self){}
+			:eosio::contract(self),
+			data(_self,_self),
+			whitelist(_self,_self){}
 
 			int qwhitelist(account_name user);
 
 			void adduser(account_name user,uint32_t role);
 
 			void udestroy(account_name user);
+
+			void initwl();
+
+			void crtcert(
+				account_name user,
+				std::string crtname,
+				std::string from ,
+				std::string to,
+				std::string content
+			);
 		private :
 			//@abi table udata
 			struct userinfo{
@@ -38,4 +50,4 @@ class cryptocertificate : public eosio::contract{
 
 };
 
-EOSIO_ABI(cryptocertificate,(adduser)(udestroy))
+EOSIO_ABI(cryptocertificate,(adduser)(udestroy)(initwl))
