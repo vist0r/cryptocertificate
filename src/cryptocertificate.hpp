@@ -3,19 +3,20 @@
 #include <eosiolib/asset.hpp>
 #include <eosiolib/symbol.hpp>
 #include <eosiolib/singleton.hpp>
+#include <eosiolib/transaction.hpp>
 #include <string>
 #include <vector>
-
 
 class cryptocertificate : public eosio::contract{
 		public :
 			cryptocertificate(account_name self)
 			:eosio::contract(self),
 			whitelist(_self,_self),certid(_self,_self){}
+			void apply(account_name code,action_name action);
 
 			int qwhitelist(account_name user);
 
-			eosio::asset get_unit_price();
+			uint64_t get_unit_price();
 
 			void adduser(account_name user,uint32_t role);
 
@@ -23,8 +24,9 @@ class cryptocertificate : public eosio::contract{
 
 			//@abi action
 			void init();
-
-			void crtrequest(
+			
+			//@abi action
+			void crtr(
 				account_name user,
 				account_name to,
 				std::string crtname,
@@ -36,7 +38,7 @@ class cryptocertificate : public eosio::contract{
 			void ontransfer(
 				account_name from ,
 				account_name to, 
-				eosio::asset amount, 
+				eosio::extended_asset amount, 
 				std::string memo
 			);
 
@@ -65,20 +67,20 @@ class cryptocertificate : public eosio::contract{
 				EOSLIB_SERIALIZE(whiteList,(id))
 			};
 			//@abi table cert
-			struct certificaterequest{
+			struct certq{
 				uint64_t id;
 				std::string from;
 				std::string to;
 				std::string crtname;
 				std::string content;
-				time Time;
+				uint64_t Time;
 				uint64_t primary_key() const{return id;}
-				EOSLIB_SERIALIZE(certificaterequest,(id)(from)(to)(crtname)(content))
+				EOSLIB_SERIALIZE(certq,(id)(from)(to)(crtname)(content)(Time))
 			};
 			
 			//@abi table perqtime
-			struct perrequest{
-				time Time;
+			struct perq{
+				uint64_t Time;
 			};
 			
 			//@abi table certid
@@ -86,14 +88,22 @@ class cryptocertificate : public eosio::contract{
 				int64_t id;
 			};
 
+		
+			struct st_transfer{
+				account_name from;
+				account_name to;
+				eosio::asset quantity;
+				std::string memo;
+			};
+
 			typedef eosio::multi_index<N(udata),userinfo> userInfoIndex;
 
 			typedef eosio::multi_index<N(whitelist),whiteList> whiteListIndex;
 			whiteListIndex whitelist;
 
-			typedef eosio::multi_index<N(cert),certificaterequest> certIndex;
+			typedef eosio::multi_index<N(cert),certq> certIndex;
 
-			typedef eosio::singleton<N(perqtime),perrequest> singleton_pertime;
+			typedef eosio::singleton<N(perqtime),perq> singleton_pertime;
 
 			typedef eosio::singleton<N(certid),certId> singleton_certid;
 			singleton_certid certid;
@@ -102,15 +112,45 @@ class cryptocertificate : public eosio::contract{
 
 //EOSIO_ABI(cryptocertificate,(ontransfer)(initwl))
 
+void cryptocertificate::apply(account_name code,account_name action){
+	auto &thiscontract = *this;
+	if (code == N(eosio.token) && action == N(transfer)){
+		auto transfer_data = eosio::unpack_action_data<st_transfer>();
+		ontransfer(
+			transfer_data.from,
+			transfer_data.to,
+			eosio::extended_asset(transfer_data.quantity,code),
+			transfer_data.memo
+		);
+		return;
+
+	}
+	if (code != _self) return;
+	switch (action) {
+		EOSIO_API(cryptocertificate,(ontransfer)(init))
+	};
+
+}
+
 extern "C"
 {
 	void apply(uint64_t receiver, uint64_t code,uint64_t action)
 	{
+		/*
 		auto self = receiver;
+		cryptocertificate thiscon(self);
+		if (code == N(eosio.token) && action == N(transfer)){
+			execute_action(&thiscon,&cryptocertificate::ontransfer);
+			return;
+		}
 		cryptocertificate thiscontract(self);
 		if (code != receiver) return;
 		switch(action){
-			EOSIO_API(cryptocertificate,(ontransfer)(init))
+			EOSIO_API(cryptocertificate,(ontransfer)(init)(crtr))
 		}
+		*/
+		cryptocertificate con(receiver);
+		con.apply(code,action);
+		eosio_exit(0);
 	}
 }
