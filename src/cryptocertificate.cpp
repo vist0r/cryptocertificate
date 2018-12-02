@@ -1,10 +1,15 @@
 #include "cryptocertificate.hpp"
+
+#define EOS_SYMBO S(4,"EOS")
+
+const time ONEDAY = 24 * 3600;
 uint64_t account_to_uint64(account_name user){
 	auto namecheck = eosio::name{user};
 	uint64_t Id = eosio::string_to_name(namecheck.to_string().c_str());
 	return Id;
 }
-void cryptocertificate::initwl(){
+void cryptocertificate::init(){
+	require_auth(_self);
 	auto itr = whitelist.begin();
 	while (itr != whitelist.end()){
 		eosio::print(itr->id," ");
@@ -13,6 +18,8 @@ void cryptocertificate::initwl(){
 	whitelist.emplace(_self,[&](auto &o){
 		o.id = N(shzshzshzshz);
 	});
+	auto itrc = certid.get_or_create(_self,certId{-1});
+	eosio::print("time = ", now());
 }
 
 int cryptocertificate::qwhitelist(account_name user){
@@ -22,7 +29,8 @@ int cryptocertificate::qwhitelist(account_name user){
 	else return 1;
 }
 
-void cryptocertificate::adduser(account_name user,uint32_t role){
+void cryptocertificate::adduser(account_name user,uint32_t role){	
+	userInfoIndex data(_self,user);
 	uint64_t Id = account_to_uint64(user);
 	auto itr = data.find(Id);
 	eosio_assert(itr == data.end(),"Account already exists!");
@@ -37,23 +45,59 @@ void cryptocertificate::adduser(account_name user,uint32_t role){
 		o.id = eosio::string_to_name(o.uname.c_str());
 		o.cname = v;
 	});
-	eosio::print(user," is created! ") ;
+	eosio::print(user," is created! ");
 }
 
 void cryptocertificate::udestroy(account_name user){
 	require_auth(user);
+	userInfoIndex data(_self,user);
 	uint64_t id =  account_to_uint64(user);
 	auto lookup = data.find(id);
 	data.erase(lookup);
 	eosio::print(eosio::name{user}," has deleted !");
 }
+eosio::asset cryptocertificate::get_unit_price(){
+	return eosio::asset(1,EOS_SYMBO);
+}
 
-void cryptocertificate::crtcert(
+void cryptocertificate::crtrequest(
 	account_name user,
+	account_name to,
 	std::string crtname,
-	std::string from,
-	std::string to,
-	std::string content
+	std::string content,
+	eosio::extended_asset amt
 	){
-	require_auth(user);
+
+	eosio_assert(cryptocertificate::get_unit_price() * content.length() == amt,"Invaild amount!");
+	eosio_assert(amt.contract == N(eosio.token), "Only true EOS token is allowed!");
+	eosio_assert(amt.symbol.name()== EOS_SYMBO,"Only true EOS token is allowed!");
+	certIndex certu(_self,user);
+	certIndex certt(_self,to);
+	singleton_pertime perqtime(_self,user);
+	if (!perqtime.exists()){
+		auto itrper = perqtime.get_or_create(_self,perrequest{now()});
+	}else{
+		auto itrper = perqtime.get();
+		eosio_assert(now() - itrper.Time > ONEDAY,"Must have One day delay");
+		itrper.Time = now();
+		perqtime.set(itrper,_self);
+	}
+	int64_t id = cryptocertificate::get_next_certid();
+	certu.emplace(_self,[&](auto o){
+		o.id = id;
+		o.from = eosio::name{user};
+		o.to = eosio::name{to};
+		o.content = content;
+		o.crtname = crtname;
+		o.Time = now();
+	});
+
+}
+
+void cryptocertificate::ontransfer(
+	account_name from,
+	account_name to,
+	eosio::asset amount,
+	std::string memo
+){
 }
