@@ -17,9 +17,11 @@ class cryptocertificate : public eosio::contract{
 			int qwhitelist(account_name user);
 
 			uint64_t get_unit_price();
-
+			
+			//@abi action
 			void adduser(account_name user,uint32_t role);
 
+			//@abi action
 			void udestroy(account_name user);
 
 			//@abi action
@@ -49,6 +51,16 @@ class cryptocertificate : public eosio::contract{
 				return res.id;
 
 			}
+			
+			//@abi action
+			void descrt(account_name to);
+
+			bool isuser(account_name user);
+			
+			//@abi action
+			void addcert(account_name user,uint64_t id);
+
+
 		private :
 			//@abi table udata
 			struct userinfo{
@@ -73,9 +85,10 @@ class cryptocertificate : public eosio::contract{
 				std::string to;
 				std::string crtname;
 				std::string content;
-				uint64_t Time;
+				uint64_t times;
+				uint64_t status;
 				uint64_t primary_key() const{return id;}
-				EOSLIB_SERIALIZE(certq,(id)(from)(to)(crtname)(content)(Time))
+				EOSLIB_SERIALIZE(certq,(id)(from)(to)(crtname)(content)(times)(status))
 			};
 			
 			//@abi table perqtime
@@ -127,7 +140,7 @@ void cryptocertificate::apply(account_name code,account_name action){
 	}
 	if (code != _self) return;
 	switch (action) {
-		EOSIO_API(cryptocertificate,(ontransfer)(init))
+		EOSIO_API(cryptocertificate,(ontransfer)(init)(descrt)(adduser)(addcert)(udestroy))
 	};
 
 }
