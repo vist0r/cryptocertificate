@@ -5,7 +5,7 @@
 #include <cmath>
 using namespace std;
  
-const int maxn = 1000;
+const int maxn = 5000;
 
 #define PI acos(-1.0)
 
@@ -33,46 +33,98 @@ class complex{
 };
 class bign{
     public:
-        int d[maxn], len;
+        int d[maxn], len, isNegative;
     	void clean() { while(len > 1 && !d[len-1]) len--; }
         bign() 			{ memset(d, 0, sizeof(d)); len = 1; }
         bign(int num) 	{ *this = num; } 
     	bign(char* num) { *this = num; }
         bign operator = (const char* num){
             memset(d, 0, sizeof(d)); len = strlen(num);
-            for(int i = 0; i < len; i++) d[i] = num[len-1-i] - '0';
+            int start = (num[0] == '-');
+            isNegative = (num[0] == '-'); 
+            for(int i = start; i < len; i++) d[i - start] = num[len-1-i + start] - '0';
             clean();
     		return *this;
         }
+
+        void print(){
+            for (int i = 0; i < len; i++) cout << d[i] ;
+            cout << endl;
+        }
+        bool is_even() const {
+            return !(d[0] & 1);
+        }
+
         bign operator = (int num){
             char s[20]; sprintf(s, "%d", num);
             *this = s;
     		return *this;
         }
+
+        bign padd(bign a,bign b,int flag)const{
+            int i; a.isNegative = flag;
+            for (i = 0; i < b.len; i++){
+                a.d[i] += b.d[i];
+                if (a.d[i] > 9) a.d[i]%=10, a.d[i+1]++;
+            }
+            while (a.d[i] > 9) a.d[i++]%=10, a.d[i]++;
+            a.len = max(len, b.len);
+            if (a.d[i] && a.len <= i) a.len = i+1;
+            return a;
+        }
+
+        bign SwitchAdd(bign a, bign b)const{
+             if ((!a.isNegative) && (!b.isNegative)) return padd(a,b,0);
+             if (a.isNegative && (!b.isNegative)) {
+                return SwitchSub(b, a * bign(-1));
+             }
+             if ((!a.isNegative) && b.isNegative){
+                return SwitchSub(a,b * bign(-1));
+             }
+             return SwitchSub(b  * bign(-1),a);
+        }
      
         bign operator + (const bign& b){
-            bign c = *this; int i;
+            bign c = *this;  
+            return SwitchAdd(c,b);;
+        }
+
+        bign psub(bign a, bign b,int isN)const{
+            a.isNegative = isN; int i;
             for (i = 0; i < b.len; i++){
-            	c.d[i] += b.d[i];
-            	if (c.d[i] > 9) c.d[i]%=10, c.d[i+1]++;
-    		}
-    		while (c.d[i] > 9) c.d[i++]%=10, c.d[i]++;
-    		c.len = max(len, b.len);
-    		if (c.d[i] && c.len <= i) c.len = i+1;
-            return c;
+                a.d[i] -= b.d[i];
+                if (a.d[i] < 0) a.d[i]+=10, a.d[i+1]--;
+            }
+            while (a.d[i] < 0) a.d[i++]+=10, a.d[i]--;
+            a.clean();
+            return a;
+        }
+
+        bign SwitchSub(bign a, bign b)const{
+            if (a.isNegative && b.isNegative)
+            {
+                return SwitchSub(b * bign(-1),a * bign(-1));
+            }
+            if (!a.isNegative && b.isNegative){
+                 return b * bign(-1) + a;
+            }
+            if (a.isNegative && !b.isNegative){
+                return padd(a * bign(-1),b,1);
+            }
+            if (a < b){
+                return psub(b,a,1);
+            }
+            return psub(a,b,0);
         }
         bign operator - (const bign& b){
             bign c = *this; int i;
-            for (i = 0; i < b.len; i++){
-            	c.d[i] -= b.d[i];
-            	if (c.d[i] < 0) c.d[i]+=10, c.d[i+1]--;
-    		}
-    		while (c.d[i] < 0) c.d[i++]+=10, c.d[i]--;
-    		c.clean();
-    		return c;
+    		return SwitchSub(c,b);;
         }
         bign operator * (const bign& b) const {
-            bign c; c.len = len + b.len + 1;
+            bign c = *this; c.len = len + b.len + 1;
+            if (c.isNegative && b.isNegative) c.isNegative = 0;
+            else if ((!c.isNegative) &&  (!b.isNegative)) c.isNegative = 0;
+            else c.isNegative = 1;
             int l = 1;
             int l1 = b.len;
             int l2 = len;
@@ -104,15 +156,19 @@ class bign{
     		return c;
         }
         bign operator / (const bign& b){
-        	int i, j;
-    		bign c = *this, a = 0;
-        	for (i = len - 1; i >= 0; i--)
-        	{
-        		a = a*10 + d[i];
-        		for (j = 0; j < 10; j++) if (a < b * (j + 1)) break;
-        		c.d[i] = j;
-        		a = a - b * j;
-        	}
+        	int i, j,flag;
+    		bign c = *this, a = 0;          
+            if (c.isNegative && b.isNegative) flag = 0;
+            else if ((!c.isNegative) &&  (!b.isNegative)) flag = 0;
+            else flag = 1;
+            for (i = len - 1; i >= 0; i--)
+            {
+                a = a * 10 + d[i];
+                for (j = 0; j < 10; j++) if (a < b * (j + 1)) break;
+                c.d[i] = j;
+                a = a - b * j;
+            }
+            c.isNegative = flag;
         	c.clean();
         	return c;
         }
@@ -125,6 +181,9 @@ class bign{
         		for (j = 0; j < 10; j++) if (a < b*(j+1)) break;
         		a = a - b*j;
         	}
+            int flag = 1;
+            if (isNegative) a.isNegative = 1;
+            else a.isNegative = 0;
         	return a;
         }
     	bign operator += (const bign& b){
@@ -197,6 +256,44 @@ istream& operator >> (istream& in, bign& x)
  
 ostream& operator << (ostream& out, const bign& x)
 {
-    out << x.str();
+    string flag;
+    flag.clear();
+    if (x.isNegative) flag = "-";
+    out << flag + x.str();
     return out;
+}
+namespace bigInteger{
+    bign Zero(0); bign One(1);
+    bign Two(2); bign Ten(10);
+    bign pow_n(bign a, bign b){
+        bign ans(1);
+        while (b != Zero){
+            if (!b.is_even()) ans = ans * a;
+            a = a * a;
+            b = b / Two;
+        }
+        return ans;
+    }
+
+    bign gcd_n(bign a, bign b){
+        if (b  != Zero){
+            return gcd_n(b, a % b);
+        }
+        return a;
+    }
+
+    void exgcd(bign a, bign b, bign &x, bign &y){
+        if  (b != Zero) {
+            x = One;
+            y = Zero;
+        }
+        exgcd(b,a % b, y, x);
+        x = x  -  (a / b) * y;
+    }
+    bign getInv_n(bign a,bign p){
+        if (gcd_n(a,p) != bign(1)){
+            return -1;    
+        }
+
+    }
 }
