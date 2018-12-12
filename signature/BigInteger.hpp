@@ -317,7 +317,6 @@ namespace BigInteger{
         if (gcd_n(a,p) != bign(1)){
             return bign(-1);    
         }
-        cout << a <<  " " << p << endl;
         bign x,y;
         exgcd(a,p,x,y);
         return (x + p) % p;
