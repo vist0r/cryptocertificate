@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cmath>
+#include <cassert>
 using namespace std;
  
 const int maxn = 5000;
@@ -47,16 +48,12 @@ class bign{
     		return *this;
         }
 
-        void print(){
-            for (int i = 0; i < len; i++) cout << d[i] ;
-            cout << endl;
-        }
         bool is_even() const {
             return !(d[0] & 1);
         }
 
         bign operator = (int num){
-            char s[20]; sprintf(s, "%d", num);
+            char s[100]; sprintf(s, "%d", num);
             *this = s;
     		return *this;
         }
@@ -157,6 +154,7 @@ class bign{
         }
         bign operator / (const bign& b){
         	int i, j,flag;
+            assert(b != bign(0));
     		bign c = *this, a = 0;          
             if (c.isNegative && b.isNegative) flag = 0;
             else if ((!c.isNegative) &&  (!b.isNegative)) flag = 0;
@@ -173,6 +171,7 @@ class bign{
         	return c;
         }
         bign operator % (const bign& b){
+            assert(b != bign(0));
         	int i, j;
     		bign a = 0;
         	for (i = len - 1; i >= 0; i--)
@@ -188,6 +187,21 @@ class bign{
         }
     	bign operator += (const bign& b){
             *this = *this + b;
+            return *this;
+        }
+
+        bign operator *= (const bign &b){
+            *this = *this * b;
+            return *this;
+        }
+
+        bign operator /= (const bign &b){
+            *this = *this / b;
+            return *this;
+        }
+
+        bign operator %= (const bign &b){
+            *this = *this % b;
             return *this;
         }
      
@@ -258,7 +272,7 @@ ostream& operator << (ostream& out, const bign& x)
 {
     string flag;
     flag.clear();
-    if (x.isNegative) flag = "-";
+    if (x.isNegative && x != 0) flag = "-";
     out << flag + x.str();
     return out;
 }
