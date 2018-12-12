@@ -6,7 +6,7 @@
 #include <cassert>
 using namespace std;
  
-const int maxn = 5000;
+const int maxn = 500;
 
 #define PI acos(-1.0)
 
@@ -97,7 +97,7 @@ class bign{
             return a;
         }
 
-        bign SwitchSub(bign a, bign b)const{
+        bign SwitchSub(const bign &a, const bign &b)const{
             if (a.isNegative && b.isNegative)
             {
                 return SwitchSub(b * bign(-1),a * bign(-1));
@@ -113,8 +113,8 @@ class bign{
             }
             return psub(a,b,0);
         }
-        bign operator - (const bign& b){
-            bign c = *this; int i;
+        bign operator - (const bign& b)const {
+            bign c = *this;
     		return SwitchSub(c,b);;
         }
         bign operator * (const bign& b) const {
@@ -170,23 +170,31 @@ class bign{
         	c.clean();
         	return c;
         }
-        bign operator % (const bign& b){
+        bign operator % (const bign& b)const {
             assert(b != bign(0));
+            bign tmpb = b;
+            if (tmpb.isNegative) tmpb.isNegative = 0;
         	int i, j;
     		bign a = 0;
         	for (i = len - 1; i >= 0; i--)
         	{
         		a = a*10 + d[i];
-        		for (j = 0; j < 10; j++) if (a < b*(j+1)) break;
-        		a = a - b*j;
+        		for (j = 0; j < 10; j++) if (a < tmpb*(j+1)) break;
+        		a = a - tmpb*j;
         	}
             int flag = 1;
             if (isNegative) a.isNegative = 1;
             else a.isNegative = 0;
         	return a;
         }
+
     	bign operator += (const bign& b){
             *this = *this + b;
+            return *this;
+        }
+
+        bign operator -= (const bign &b){
+            *this = *this - b;
             return *this;
         }
 
@@ -276,15 +284,15 @@ ostream& operator << (ostream& out, const bign& x)
     out << flag + x.str();
     return out;
 }
-namespace bigInteger{
+namespace BigInteger{
     bign Zero(0); bign One(1);
     bign Two(2); bign Ten(10);
     bign pow_n(bign a, bign b){
         bign ans(1);
         while (b != Zero){
-            if (!b.is_even()) ans = ans * a;
-            a = a * a;
-            b = b / Two;
+            if (!b.is_even()) ans *=  a;
+            a *= a;
+            b /=  Two;
         }
         return ans;
     }
@@ -297,17 +305,22 @@ namespace bigInteger{
     }
 
     void exgcd(bign a, bign b, bign &x, bign &y){
-        if  (b != Zero) {
+        if  (b == Zero) {
             x = One;
             y = Zero;
+            return;
         }
         exgcd(b,a % b, y, x);
-        x = x  -  (a / b) * y;
+        y -=  (a / b) * x;
     }
     bign getInv_n(bign a,bign p){
         if (gcd_n(a,p) != bign(1)){
-            return -1;    
+            return bign(-1);    
         }
+        cout << a <<  " " << p << endl;
+        bign x,y;
+        exgcd(a,p,x,y);
+        return (x + p) % p;
 
     }
 }
