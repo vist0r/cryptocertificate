@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "system_error": "cpp",
+        "xlocale": "cpp",
+        "initializer_list": "cpp",
+        "vector": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp"
+    }
+}

@@ -1,0 +1,271 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Dec 25 23:49:39 2018",
+    "version": "eosio::abi/1.1",
+    "structs": [
+        {
+            "name": "addcert",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "adduser",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "role",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "certId",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "int64"
+                }
+            ]
+        },
+        {
+            "name": "certq",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "from",
+                    "type": "string"
+                },
+                {
+                    "name": "to",
+                    "type": "string"
+                },
+                {
+                    "name": "crtname",
+                    "type": "string"
+                },
+                {
+                    "name": "content",
+                    "type": "string"
+                },
+                {
+                    "name": "times",
+                    "type": "uint64"
+                },
+                {
+                    "name": "status",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "crtr",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "crtname",
+                    "type": "string"
+                },
+                {
+                    "name": "content",
+                    "type": "string"
+                },
+                {
+                    "name": "amt",
+                    "type": "extended_asset"
+                }
+            ]
+        },
+        {
+            "name": "descrt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "init",
+            "base": "",
+            "fields": []
+        },
+        {
+            "name": "ontransfer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "extended_asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "perq",
+            "base": "",
+            "fields": [
+                {
+                    "name": "Time",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "udestroy",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "userinfo",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "role",
+                    "type": "uint32"
+                },
+                {
+                    "name": "uname",
+                    "type": "string"
+                },
+                {
+                    "name": "cname",
+                    "type": "string[]"
+                }
+            ]
+        },
+        {
+            "name": "whiteList",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                }
+            ]
+        }
+    ],
+    "types": [],
+    "actions": [
+        {
+            "name": "addcert",
+            "type": "addcert",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "adduser",
+            "type": "adduser",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "crtr",
+            "type": "crtr",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "descrt",
+            "type": "descrt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "init",
+            "type": "init",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "ontransfer",
+            "type": "ontransfer",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "udestroy",
+            "type": "udestroy",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "cert",
+            "type": "certq",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "certId",
+            "type": "certId",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "perq",
+            "type": "perq",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "udata",
+            "type": "userinfo",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "whitelist",
+            "type": "whiteList",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": [],
+    "abi_extensions": []
+}
